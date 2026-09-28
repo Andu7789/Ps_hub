@@ -1,0 +1,136 @@
+/* PS Business Hub marketing site: additions on top of Creativo's main.css
+   (kept unmodified). Accent is the app's own teal (#0f766e, the default
+   --brand in src/app/globals.css), ~5.4:1 against the white button text. */
+:root {
+  --accent-color: #0f766e;
+  --nav-dropdown-hover-color: #0f766e;
+}
+
+/* Header */
+.header .logo { gap: 10px; text-decoration: none; }
+.header .logo .sitename { font-size: 24px; margin: 0; }
+.logo-mark {
+  display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 9px;
+  background: var(--accent-color); color: #fff; font-size: 16px;
+}
+.header-cta-row { display: flex; align-items: center; gap: 1rem; }
+.header-cta-row .signin-link {
+  color: color-mix(in srgb, var(--default-color), transparent 30%);
+  font-size: 14px; font-weight: 500; text-decoration: none;
+}
+.header-cta-row .signin-link:hover { color: var(--accent-color); }
+.header-cta-row .btn-start {
+  display: inline-block; background: var(--accent-color); color: #fff;
+  font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: 10px;
+  text-decoration: none; transition: all 0.3s ease; white-space: nowrap;
+}
+.header-cta-row .btn-start:hover { background: color-mix(in srgb, var(--accent-color), black 12%); color: #fff; transform: translateY(-2px); }
+@media (max-width: 1200px) { .header-cta-row { order: 2; } }
+@media (max-width: 420px) { .header .logo .sitename { font-size: 19px; } .header-cta-row .btn-start { padding: 8px 14px; } }
+
+a:focus-visible, [role="button"]:focus-visible, input:focus-visible {
+  outline: 3px solid var(--accent-color); outline-offset: 2px;
+}
+
+/* Hero */
+.eyebrow {
+  font-family: var(--nav-font); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: color-mix(in srgb, var(--default-color) 70%, transparent);
+}
+#hero { padding-bottom: 50px; }
+#hero .info-block { height: auto; justify-content: flex-start; }
+.hero-fineprint { margin-top: 18px; font-size: 0.95rem; color: color-mix(in srgb, var(--default-color) 80%, transparent); }
+.hero-panel {
+  background: var(--surface-color); border-radius: 18px; padding: 22px 22px 10px;
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+  box-shadow: 0 24px 50px -28px rgba(0, 0, 0, 0.35);
+}
+.hero-panel-title { font-family: var(--heading-font); font-weight: 700; color: var(--heading-color); margin-bottom: 8px; }
+.hero-panel ul { list-style: none; padding: 0; margin: 0; }
+.hero-panel li {
+  display: flex; justify-content: space-between; gap: 12px; align-items: center;
+  padding: 11px 0; border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%); font-size: 0.92rem;
+}
+.hero-panel li i { color: var(--accent-color); margin-right: 6px; }
+.hero-panel .due { flex: none; font-size: 0.8rem; color: color-mix(in srgb, var(--default-color) 70%, transparent); }
+.hero-panel .due.overdue { color: #b3261e; font-weight: 600; }
+
+/* Promises */
+.promise { text-align: center; padding: 10px 12px; }
+.promise-big { display: block; font-family: var(--heading-font); font-size: 3rem; font-weight: 900; color: var(--accent-color); line-height: 1.1; }
+.promise p { margin-top: 8px; }
+
+/* Module cards on the home page */
+.module-card { display: block; height: 100%; text-decoration: none; color: inherit; }
+.module-card:hover {
+  background: linear-gradient(160deg, var(--surface-color) 0%, color-mix(in srgb, var(--accent-color), var(--surface-color) 94%) 100%);
+  border-color: color-mix(in srgb, var(--accent-color), transparent 70%);
+}
+.module-includes { font-size: 0.85rem; color: color-mix(in srgb, var(--default-color) 70%, transparent); }
+.module-link { font-weight: 600; font-size: 0.92rem; color: var(--accent-color); }
+.core-card { height: 100%; border-style: dashed; }
+
+/* Roles table */
+.roles-title { font-family: var(--heading-font); font-size: 1.4rem; text-align: center; margin-bottom: 18px; }
+.roles-table { background: var(--surface-color); border-radius: 14px; overflow: hidden; }
+.roles-table th, .roles-table td { padding: 14px 16px; }
+.roles-table thead th { font-family: var(--nav-font); font-size: 0.9rem; text-align: center; }
+.roles-table tbody td { text-align: center; color: color-mix(in srgb, var(--default-color) 55%, transparent); }
+.roles-table tbody td .bi-check-lg { color: var(--accent-color); font-size: 1.25rem; }
+.roles-table tbody th { font-weight: 500; }
+
+/* Pricing calculator */
+.demo-note { font-size: 0.85rem; color: color-mix(in srgb, var(--default-color) 65%, transparent); margin-top: 6px; }
+.calc { margin: 18px 0 22px; text-align: left; }
+.calc-row {
+  display: flex; align-items: center; gap: 12px; padding: 10px 4px; cursor: pointer;
+  border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+}
+.calc-row .form-check-input { margin: 0; flex: none; }
+.calc-row .form-check-input:checked { background-color: var(--accent-color); border-color: var(--accent-color); }
+.calc-name { flex: 1; }
+.calc-name i { color: var(--accent-color); margin-right: 6px; }
+.calc-price { font-weight: 600; }
+.calc-note { font-size: 0.82rem; text-align: center; margin-top: 10px; color: color-mix(in srgb, var(--default-color) 70%, transparent); }
+
+/* FAQ question headings are focusable (see site.js) */
+.faq .faq-item .faq-question { cursor: pointer; }
+
+/* Module pages */
+.module-hero { padding-top: 120px; }
+.breadcrumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; font-size: 0.9rem; }
+.breadcrumbs li + li::before { content: "/"; margin-right: 6px; color: color-mix(in srgb, var(--default-color) 45%, transparent); }
+.breadcrumbs a { color: color-mix(in srgb, var(--default-color) 75%, transparent); }
+.breadcrumbs a:hover { color: var(--accent-color); }
+.module-hero-icon {
+  display: inline-grid; place-items: center; width: 56px; height: 56px; border-radius: 16px; margin-bottom: 14px;
+  background: color-mix(in srgb, var(--accent-color), transparent 88%); color: var(--accent-color); font-size: 26px;
+}
+.module-hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; }
+.module-hero-tagline { font-size: 1.2rem; font-weight: 500; color: var(--heading-color); }
+.module-hero-summary { max-width: 62ch; }
+.module-price-card, .info-panel, .feature-box {
+  background: var(--surface-color); border-radius: 16px; padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+}
+.module-price { font-size: 1rem; margin-bottom: 4px; }
+.module-price span { font-family: var(--heading-font); font-size: 2.4rem; font-weight: 900; color: var(--heading-color); }
+.module-price-note { font-size: 0.85rem; color: color-mix(in srgb, var(--default-color) 70%, transparent); }
+.module-price-card .btn-get-started { display: inline-block; }
+.feature-group { margin-bottom: 44px; }
+.feature-group-title { font-family: var(--heading-font); font-size: 1.35rem; margin-bottom: 18px; }
+.feature-group-title i { color: var(--accent-color); margin-right: 6px; }
+.feature-box { height: 100%; }
+.feature-box h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+.feature-box p { margin: 0; font-size: 0.95rem; }
+.info-panel { height: 100%; }
+.info-panel h3 { font-family: var(--heading-font); font-size: 1.2rem; margin-bottom: 14px; }
+.info-panel h3 i { color: var(--accent-color); margin-right: 6px; }
+.check-list { list-style: none; padding: 0; margin: 0; }
+.check-list li { padding: 5px 0; }
+.check-list i { color: var(--accent-color); margin-right: 6px; }
+.module-pager {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 40px;
+  padding-top: 20px; border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+}
+.module-pager a { font-weight: 600; color: var(--accent-color); text-decoration: none; }

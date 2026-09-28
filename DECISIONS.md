@@ -151,3 +151,15 @@ Docker Hub rate-limited this environment, so the full `supabase start` stack cou
 
 **Reversibility:** High.
 
+
+---
+
+## 15. A marketing site on the Creativo template, generated from a script
+
+**Decision:** `/welcome` (the signed-out landing page) and `/features/<module>` are static HTML built by `scripts/build-site.mjs` from a content list in that file (one entry per module, its groups of registers, and what staff can/can't do there), rendered onto the same Creativo Bootstrap template MessageHome and Order Ahead already use — its CSS/JS copied byte-for-byte from MessageHome's copy (which carries two small hover-colour fixes over the stock template), only the accent colour changed to the Hub's own teal. `next.config.ts` rewrites the tidy URLs to the generated files in `public/`. Run `pnpm site` after editing the content and commit the output; nothing renders it at request time.
+
+**Why:** A generated-from-data site keeps every module's claims tied to one list a developer edits, rather than hand-maintained prose that drifts from `src/lib/registers/defs.ts`. Static files avoid adding a CMS or another page type to the app for content that changes rarely.
+
+**Licensing:** BootstrapMade's free Creativo license covers personal, non-commercial projects only, and requires keeping the "BootstrapMade — Creativo" footer credit; it does not cover a paid product or client work. MessageHome and Order Ahead already ship on the free tier's terms (credit kept) for what are commercial products, so this isn't a new question — but it means none of the three sites are on solid licensing ground as they stand. A Pro licence (BootstrapMade sells one covering unlimited sites) is the fix; that's a purchase for the business owner to make, not something this codebase can resolve on its own.
+
+**Reversibility:** High for the site itself (regenerate or delete `public/welcome.html` and `public/features/`). The licence question doesn't reverse — it's owed for however long any of the three sites keeps running on this template.

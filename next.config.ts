@@ -21,6 +21,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // The static marketing site in public/ (built by scripts/build-site.mjs),
+  // at tidy URLs.
+  async rewrites() {
+    return [
+      { source: "/welcome", destination: "/welcome.html" },
+      { source: "/features/:module", destination: "/features/:module.html" },
+    ];
+  },
 };
 
 export default nextConfig;

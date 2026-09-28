@@ -11,6 +11,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "scripts/**",
+    // Creativo template's own script, kept as MessageHome ships it.
+    "public/assets/**",
   ]),
 ]);
 
