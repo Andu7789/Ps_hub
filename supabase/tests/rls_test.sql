@@ -169,7 +169,7 @@ select test.expect_error(format('select hub_sign_policy(%L, %L)', :'policy', 'Sa
 reset role;
 select set_config('request.jwt.claims', '', false);
 set role anon;
-select test.expect((select count(*) from hub_businesses) = 0, 'anon sees no businesses');
+select test.expect_error('select count(*) from hub_businesses', 'anon cannot read businesses');
 reset role;
 set role anon;
 do $$ begin

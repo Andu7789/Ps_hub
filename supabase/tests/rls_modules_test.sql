@@ -103,7 +103,7 @@ select test.expect(jsonb_array_length(hub_public_jobs('m-dule-test-co') -> 'vaca
 select hub_apply_for_job(:'job', 'Ann Applicant', 'ann@x.test', '07700 900000', 'Keen');
 select test.expect_error(format('select hub_apply_for_job(%L, %L, %L, %L, %L)', :'draft_job', 'Ann', 'ann@x.test', '', ''), 'cannot apply to a draft');
 select test.expect_error(format('select hub_apply_for_job(%L, %L, %L, %L, %L)', :'job', 'Ann', 'not-an-email', '', ''), 'application needs a valid email');
-select test.expect((select count(*) from hub_applicants) = 0, 'anon cannot read applicants');
+select test.expect_error('select count(*) from hub_applicants', 'anon cannot read applicants');
 reset role;
 set role authenticated;
 select test.act_as(:'manager', 'manager@m.test');
@@ -181,7 +181,7 @@ select hub_submit_review(:'tok', 5, 'Brilliant');
 select test.expect_error(format('select hub_submit_review(%L, 1, %L)', :'tok', 'Changed my mind'), 'a review link works once');
 select test.expect(jsonb_array_length(hub_public_site('m-dule-test-co') -> 'reviews') = 0, 'unapproved review not shown');
 select hub_request_booking('m-dule-test-co', null, 'Chris Customer', 'chris@x.test', '', '2026-10-10', 'Weekly please');
-select test.expect((select count(*) from hub_booking_requests) = 0, 'anon cannot read booking requests');
+select test.expect_error('select count(*) from hub_booking_requests', 'anon cannot read booking requests');
 select test.expect_error(format('select hub_request_booking(%L, null, %L, %L, %L, null, null)', 'm-dule-test-co', 'No Contact', '', ''),
   'booking needs an email or phone');
 reset role;
