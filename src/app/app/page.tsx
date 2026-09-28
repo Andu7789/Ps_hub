@@ -5,8 +5,10 @@ import { getEnabledModules, requireManager } from "@/lib/auth";
 import { outstandingCount } from "@/lib/policies";
 import { collectDueItems, dueItemHref } from "@/lib/registers/data";
 import { policiesEnabled } from "@/lib/modules";
+import { buildOnboardingChecklist } from "@/lib/onboarding";
+import { loadOnboardingCounts } from "@/lib/onboarding-data";
 import { formatCalendarDate } from "@/lib/format";
-import { cardClass } from "@/components/ui/styles";
+import { cardClass, secondaryButtonClass } from "@/components/ui/styles";
 import type { Member, Policy, PolicySignature } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Overview" };
@@ -44,9 +46,35 @@ export default async function OverviewPage() {
   const due = await collectDueItems(supabase, membership.business_id, modules);
   const overdue = due.filter((d) => d.overdue).length;
 
+  // Getting-started checklist: owner only (one of its steps is pay details,
+  // which RLS hides from managers anyway), and only while something on it
+  // is still outstanding — an established business stops seeing it.
+  let checklist: ReturnType<typeof buildOnboardingChecklist> = [];
+  if (membership.role === "owner") {
+    const counts = await loadOnboardingCounts(supabase, membership.business_id, modules, members.length, policies.length);
+    checklist = buildOnboardingChecklist(modules, counts).filter((item) => !item.done);
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold text-foreground">Hello, {membership.full_name.split(" ")[0]}</h1>
+
+      {checklist.length > 0 && (
+        <section className={cardClass}>
+          <h2 className="text-base font-semibold text-foreground">Getting started</h2>
+          <p className="mt-1 text-sm text-muted-foreground">A few things left to get set up.</p>
+          <ul className="mt-3 divide-y divide-border text-sm">
+            {checklist.map((item) => (
+              <li key={item.key} className="flex items-center justify-between gap-3 py-2">
+                <span className="text-foreground">{item.label}</span>
+                <Link href={item.href} className={secondaryButtonClass}>
+                  {item.key === "invite" ? "Invite" : "Add"}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Link href="/app/staff" className={`${cardClass} hover:border-brand`}>
