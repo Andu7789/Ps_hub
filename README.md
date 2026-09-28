@@ -43,7 +43,7 @@ npx supabase status          # prints the URL and keys for .env.local
 1. Create a project at supabase.com (a dedicated one is recommended, see `DECISIONS.md` #1).
 2. Run each file in `supabase/migrations/` in order, in the SQL editor, or link the project and run `npx supabase db push`.
 3. Copy the project URL, anon key and service role key into `.env.local` (and into Vercel's environment variables when deploying).
-4. Under Authentication > URL Configuration, set the Site URL to where the Hub is hosted.
+4. Dedicated project only: under Authentication > URL Configuration, set the Site URL to where the Hub is hosted. In a shared project leave it alone, since it belongs to the other apps; the Hub doesn't need it, because it builds its own sign-in links (DECISIONS.md #6).
 5. Check Storage has a private bucket called `hub-documents` (migration 0003 creates it).
 
 ## Deploying on Vercel
