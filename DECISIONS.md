@@ -74,3 +74,69 @@ One difference from PS Clean: the link carries `type=email`, not `type=magiclink
 Without `RESEND_API_KEY`, development mode prints emails to the console instead of failing.
 
 **Reversibility:** High.
+
+---
+
+## 7. Most modules are "registers" driven by one definition file
+
+**Decision:** 38 of the module screens (training records, risks, insurance, subject access requests, clients, timesheets…) are described as data in `src/lib/registers/defs.ts`: table, fields, list columns, which dates are "due", what counts as closed, and what staff may see or submit. One set of pages (`/app/r/[register]`, `/me/r/[register]`) and one set of actions (`src/lib/actions/records.ts`) render and save all of them. Anything that isn't a plain list-and-form (invoices, the public website, payroll export, contract issuing, the training matrix, the risk matrix, file uploads) has its own page.
+
+**Why:** Seven modules as hand-built pages would have been several times the code, each with its own bugs. A new register is a table in a migration plus an entry in `defs.ts`. `src/lib/registers/values.test.ts` checks every definition is consistent (field names, due fields, references), which caught two registers sharing a URL key.
+
+**Safety:** table and column names only ever come from the definitions, never from the request. Form values are checked against each field's type; read-only fields (worked-out scores and deadlines) are never taken from a form. The database has the final say through row-level security.
+
+**Reversibility:** High. Any register can be given its own page later without changing its table.
+
+---
+
+## 8. One helper applies the standard access rules to every module table
+
+**Decision:** `hub_apply_rls(table, module, min_role, staff_read_own, staff_insert_own)` (migration 0003) creates the same policies on every module table: managers (or owners only, for pay data) manage records while the module is on; optionally staff read their own records; optionally staff add records about themselves. For staff-submitted rows, the trigger `hub_self_service_defaults` resets anything only a manager may set (a holiday request always lands as "requested", an incident report without investigation notes). Staff never get update or delete permission: acknowledging a supervision, ticking an onboarding task or signing a contract are narrow database functions.
+
+References between tables are composite `(id, business_id)` foreign keys, so a record can never point at a person or client in another business, even if a request is tampered with.
+
+Confidential logs (employee relations cases, safeguarding) let staff raise a concern but never read the log back. Pay details are owner-only; staff can read their own.
+
+**Tested by** `supabase/tests/rls_modules_test.sql` (`pnpm test:db`).
+
+**Reversibility:** Medium.
+
+---
+
+## 9. Policies are shared by three modules
+
+**Decision:** The policy library (decision #5) is open while any of Staff Hub, Compliance or GDPR is on (`hub_policies_enabled`), with a category per policy, since each of those modules needs its own policy suite and they shouldn't be three separate libraries.
+
+---
+
+## 10. Files are private; access follows the database row
+
+**Decision:** Uploaded files go to a private Storage bucket (`hub-documents`) that only the server's service role touches. Each file has a row in `hub_documents`, protected by the standard rules (managers see the business's files, staff see files about themselves). Opening a file (`/files/[id]`) first reads that row as the signed-in person; only if that works does the server hand out a one-minute signed link. There are no `storage.objects` policies to keep in step. Files are limited to 4MB because Vercel limits a request to 4.5MB.
+
+**Reversibility:** High.
+
+---
+
+## 11. Public pages go through database functions, not table access
+
+**Decision:** The Website module's public page, booking requests, job adverts and applications, review links and published privacy notices are served to anonymous visitors through `SECURITY DEFINER` functions (`hub_public_site`, `hub_request_booking`, `hub_apply_for_job`, `hub_submit_review`…) that return or accept exactly what that page needs, and only for a business with the module on and (for the site) published. The anonymous key has no table access at all.
+
+Public forms have a hidden honeypot field to turn away simple bots. There is no rate limiting yet; if spam becomes a problem, add Vercel's firewall rate limiting or a CAPTCHA.
+
+A business's own domain is served by `src/proxy.ts`: a request on a domain other than the Hub's own is looked up (`hub_slug_for_domain`) and rewritten to that business's `/s/<slug>` pages. The domain still has to be added to the Vercel project and its DNS pointed at Vercel by hand.
+
+**Reversibility:** High.
+
+---
+
+## 12. Payroll prepares; the provider runs it
+
+**Decision:** Payroll Connect keeps pay details, pension status, timesheets, pay queries and a checklist per pay run, and exports a CSV per pay period (approved hours; holiday, sick and other leave days in the period; pay rate, tax code, NI number). It does not calculate tax or NI or file anything with HMRC: that needs HMRC-recognised payroll software, which the business's provider runs from the export. Bank details are deliberately not stored. The CSV neutralises cells starting with `=`, `+`, `-` or `@` so a spreadsheet can't run them as formulas.
+
+**Reversibility:** High.
+
+---
+
+## 13. Testing without the hosted services
+
+Docker Hub rate-limited this environment, so the full `supabase start` stack couldn't be pulled. The browser tests ran instead against local Postgres 16, Supabase's real auth server (GoTrue) and PostgREST release binaries, a small Node proxy standing in for the API gateway, and an in-memory stand-in for Storage (upload, signed link, download, delete). That exercises the real sign-in, RLS and database functions. File storage on a real Supabase project is the one piece only tested against the stand-in.

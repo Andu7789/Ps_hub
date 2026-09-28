@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { signOutAction, switchBusinessAction } from "@/lib/actions/auth";
 import { PRODUCT_NAME } from "@/lib/site";
 
@@ -11,8 +14,13 @@ export function Header({
   current: { businessId: string; name: string; logoUrl: string | null } | null;
   businesses: { id: string; name: string }[];
 }) {
+  // Public pages (a business's own site, job adverts, review links) carry
+  // that business's branding instead of the Hub's header.
+  const pathname = usePathname();
+  if (pathname?.startsWith("/s/") || pathname?.startsWith("/review/")) return null;
+
   return (
-    <header className="border-b border-border bg-card">
+    <header className="border-b border-border bg-card print:hidden">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <Link href="/" className="flex items-center gap-2 text-base font-semibold text-foreground">
           {current?.logoUrl && (

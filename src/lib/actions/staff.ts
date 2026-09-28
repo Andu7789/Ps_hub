@@ -159,6 +159,12 @@ export async function saveStaffProfileAction(_prev: ActionState, formData: FormD
   const startDate = optionalField(formData, "start_date");
   if (startDate && !/^\d{4}-\d{2}-\d{2}$/.test(startDate)) return { error: "Enter a valid start date." };
 
+  const allowanceRaw = optionalField(formData, "holiday_allowance_days");
+  const allowance = allowanceRaw === null ? null : Number(allowanceRaw);
+  if (allowance !== null && (!Number.isFinite(allowance) || allowance < 0 || allowance > 366)) {
+    return { error: "Enter holiday allowance in days." };
+  }
+
   const { error } = await supabase.from("hub_staff_profiles").upsert(
     {
       member_id: member.id,
@@ -169,6 +175,7 @@ export async function saveStaffProfileAction(_prev: ActionState, formData: FormD
       phone: optionalField(formData, "phone"),
       emergency_contact_name: optionalField(formData, "emergency_contact_name"),
       emergency_contact_phone: optionalField(formData, "emergency_contact_phone"),
+      holiday_allowance_days: allowance,
     },
     { onConflict: "member_id" }
   );

@@ -13,6 +13,11 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // File uploads go through a Server Action. Vercel caps a request at
+  // 4.5MB, so files are limited to 4MB (MAX_FILE_BYTES in actions/files.ts).
+  experimental: {
+    serverActions: { bodySizeLimit: "4.4mb" },
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { isModuleEnabled, requireManager } from "@/lib/auth";
+import { getEnabledModules, requireManager } from "@/lib/auth";
+import { policiesEnabled } from "@/lib/modules";
+import { MemberRecords } from "@/components/registers/member-records";
 import { resendInviteAction, saveStaffProfileAction, setMemberStatusAction, updateMemberAction } from "@/lib/actions/staff";
 import { canManageMember, ROLE_LABELS, rolesAssignableBy } from "@/lib/permissions";
 import { hasSignedCurrent } from "@/lib/policies";
@@ -41,18 +43,22 @@ export default async function StaffMemberPage({
 
   const canManage = canManageMember(actor.role, member.role) && member.id !== actor.id;
   const assignable = rolesAssignableBy(actor.role);
-  const staffHub = await isModuleEnabled(actor.business_id, "staff_hub");
+  const enabled = await getEnabledModules(actor.business_id);
+  const staffHub = enabled.has("staff_hub");
+  const policiesOn = policiesEnabled(enabled);
 
   let profile: StaffProfile | null = null;
   let policies: Policy[] = [];
   let signatures: PolicySignature[] = [];
   if (staffHub) {
-    const [{ data: p }, { data: pol }, { data: sig }] = await Promise.all([
-      supabase.from("hub_staff_profiles").select("*").eq("member_id", member.id).maybeSingle(),
+    const { data: p } = await supabase.from("hub_staff_profiles").select("*").eq("member_id", member.id).maybeSingle();
+    profile = p as StaffProfile | null;
+  }
+  if (policiesOn) {
+    const [{ data: pol }, { data: sig }] = await Promise.all([
       supabase.from("hub_policies").select("*").eq("business_id", actor.business_id).eq("is_published", true).order("title"),
       supabase.from("hub_policy_signatures").select("*").eq("member_id", member.id),
     ]);
-    profile = p as StaffProfile | null;
     policies = (pol ?? []) as Policy[];
     signatures = (sig ?? []) as PolicySignature[];
   }
@@ -181,11 +187,27 @@ export default async function StaffMemberPage({
                     <input id="start_date" name="start_date" type="date" defaultValue={profile?.start_date ?? ""} className={`mt-1 ${inputClass}`} />
                   </div>
                 </div>
-                <div>
-                  <label htmlFor="phone" className={labelClass}>
-                    Phone
-                  </label>
-                  <input id="phone" name="phone" type="tel" defaultValue={profile?.phone ?? ""} className={`mt-1 ${inputClass}`} />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="phone" className={labelClass}>
+                      Phone
+                    </label>
+                    <input id="phone" name="phone" type="tel" defaultValue={profile?.phone ?? ""} className={`mt-1 ${inputClass}`} />
+                  </div>
+                  <div>
+                    <label htmlFor="holiday_allowance_days" className={labelClass}>
+                      Holiday allowance (days a year)
+                    </label>
+                    <input
+                      id="holiday_allowance_days"
+                      name="holiday_allowance_days"
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      defaultValue={profile?.holiday_allowance_days ?? ""}
+                      className={`mt-1 ${inputClass}`}
+                    />
+                  </div>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
@@ -218,7 +240,7 @@ export default async function StaffMemberPage({
         )}
       </div>
 
-      {staffHub && policies.length > 0 && (
+      {policiesOn && policies.length > 0 && (
         <section className={cardClass}>
           <h2 className="text-base font-semibold text-foreground">Policies</h2>
           <ul className="mt-3 divide-y divide-border">
@@ -239,6 +261,7 @@ export default async function StaffMemberPage({
           </ul>
         </section>
       )}
+      <MemberRecords actor={actor} member={member} enabled={enabled} allowanceDays={profile?.holiday_allowance_days ?? null} />
     </div>
   );
 }

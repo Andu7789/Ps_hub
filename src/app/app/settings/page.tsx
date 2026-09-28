@@ -6,6 +6,8 @@ import { cardClass, inputClass, labelClass } from "@/components/ui/styles";
 
 export const metadata: Metadata = { title: "Settings" };
 
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
 export default async function SettingsPage() {
   const { business } = await requireOwner();
 
@@ -31,6 +33,23 @@ export default async function SettingsPage() {
               defaultValue={business.contact_email ?? ""}
               className={`mt-1 ${inputClass}`}
             />
+          </div>
+          <div>
+            <label htmlFor="leave_year_start_month" className={labelClass}>
+              Leave year starts in
+            </label>
+            <select
+              id="leave_year_start_month"
+              name="leave_year_start_month"
+              defaultValue={String(business.leave_year_start_month)}
+              className={`mt-1 ${inputClass}`}
+            >
+              {MONTHS.map((m, i) => (
+                <option key={m} value={i + 1}>
+                  {m}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label htmlFor="brand_color" className={labelClass}>

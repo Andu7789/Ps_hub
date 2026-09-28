@@ -63,12 +63,52 @@ export async function updateBusinessAction(_prev: ActionState, formData: FormDat
   if (!name) return { error: "Enter a business name." };
   if (!/^#[0-9a-fA-F]{6}$/.test(brandColor)) return { error: "Pick a brand colour." };
 
+  const leaveYearStart = Number(field(formData, "leave_year_start_month") || "1");
+  if (!Number.isInteger(leaveYearStart) || leaveYearStart < 1 || leaveYearStart > 12) return { error: "Pick the month your leave year starts." };
+
   const supabase = await createClient();
   const { error } = await supabase
     .from("hub_businesses")
-    .update({ name, brand_color: brandColor, contact_email: optionalField(formData, "contact_email") })
+    .update({
+      name,
+      brand_color: brandColor,
+      contact_email: optionalField(formData, "contact_email"),
+      leave_year_start_month: leaveYearStart,
+    })
     .eq("id", owner.business_id);
   if (error) return { error: "Couldn't save your changes." };
+  revalidatePath("/", "layout");
+  return { ok: "Saved." };
+}
+
+// The Website module's public page details. Owner-only, like the rest of
+// the business record.
+export async function updateWebsiteAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const owner = await requireOwner();
+  const slug = field(formData, "slug").toLowerCase();
+  if (!/^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$/.test(slug)) {
+    return { error: "Your web address can use lower-case letters, numbers and hyphens." };
+  }
+  const domain = field(formData, "custom_domain").toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  if (domain && !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain)) return { error: "Enter a domain like www.example.co.uk." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("hub_businesses")
+    .update({
+      slug,
+      tagline: optionalField(formData, "tagline"),
+      about: optionalField(formData, "about"),
+      phone: optionalField(formData, "phone"),
+      address: optionalField(formData, "address"),
+      custom_domain: domain || null,
+      website_published: formData.get("website_published") === "on",
+    })
+    .eq("id", owner.business_id);
+  if (error) {
+    if (error.code === "23505") return { error: "That web address or domain is already taken." };
+    return { error: "Couldn't save your changes." };
+  }
   revalidatePath("/", "layout");
   return { ok: "Saved." };
 }

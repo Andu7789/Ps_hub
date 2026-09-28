@@ -36,3 +36,12 @@ export const EMPLOYMENT_TYPE_LABELS = {
   casual: "Casual",
   contractor: "Contractor",
 } as const;
+
+export function formatMoney(value: number | string | null | undefined): string {
+  return `£${Number(value ?? 0).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+// Whole hours from now until a moment (negative once it has passed).
+export function hoursUntil(moment: Date): number {
+  return Math.round((moment.getTime() - Date.now()) / 3_600_000);
+}

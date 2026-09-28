@@ -68,7 +68,7 @@ export default async function PolicyPage({ params }: { params: Promise<{ policyI
           <div className="mt-4">
             <ActionForm action={updatePolicyAction} submitLabel="Save changes">
               <input type="hidden" name="policy_id" value={policy.id} />
-              <PolicyFields title={policy.title} body={policy.body} />
+              <PolicyFields title={policy.title} body={policy.body} category={policy.category} />
             </ActionForm>
           </div>
         </section>

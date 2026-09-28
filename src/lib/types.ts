@@ -7,6 +7,14 @@ export type Business = {
   brand_color: string;
   logo_url: string | null;
   contact_email: string | null;
+  slug: string;
+  tagline: string | null;
+  about: string | null;
+  phone: string | null;
+  address: string | null;
+  website_published: boolean;
+  custom_domain: string | null;
+  leave_year_start_month: number;
   created_at: string;
 };
 
@@ -32,6 +40,7 @@ export type StaffProfile = {
   phone: string | null;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
+  holiday_allowance_days: number | null;
   updated_at: string;
 };
 
@@ -41,6 +50,7 @@ export type Policy = {
   title: string;
   body: string;
   version: number;
+  category: string;
   is_published: boolean;
   created_at: string;
   updated_at: string;

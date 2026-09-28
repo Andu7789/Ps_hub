@@ -29,4 +29,5 @@ for f in supabase/migrations/*.sql; do
   "${PSQL[@]}" -d hub_test -f "$f" >/dev/null
 done
 "${PSQL[@]}" -d hub_test -f supabase/tests/rls_test.sql
+"${PSQL[@]}" -d hub_test -f supabase/tests/rls_modules_test.sql
 echo "Database tests passed."

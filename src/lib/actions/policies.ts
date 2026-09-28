@@ -3,12 +3,20 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { isModuleEnabled, requireManager, requireMember } from "@/lib/auth";
+import { getEnabledModules, requireManager, requireMember } from "@/lib/auth";
+import { policiesEnabled } from "@/lib/modules";
 import { field, type ActionState } from "@/lib/action-state";
+
+const CATEGORIES = ["hr", "health_safety", "data_protection", "safeguarding", "general"];
+
+function category(formData: FormData): string {
+  const value = field(formData, "category");
+  return CATEGORIES.includes(value) ? value : "general";
+}
 
 async function requireStaffHubManager() {
   const actor = await requireManager();
-  if (!(await isModuleEnabled(actor.business_id, "staff_hub"))) redirect("/app/modules");
+  if (!policiesEnabled(await getEnabledModules(actor.business_id))) redirect("/app/modules");
   return actor;
 }
 
@@ -22,7 +30,7 @@ export async function createPolicyAction(_prev: ActionState, formData: FormData)
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("hub_policies")
-    .insert({ business_id: actor.business_id, title, body })
+    .insert({ business_id: actor.business_id, title, body, category: category(formData) })
     .select("id")
     .single();
   if (error || !data) return { error: "Couldn't save the policy." };
@@ -42,7 +50,7 @@ export async function updatePolicyAction(_prev: ActionState, formData: FormData)
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("hub_policies")
-    .update({ title, body })
+    .update({ title, body, category: category(formData) })
     .eq("id", field(formData, "policy_id"))
     .eq("business_id", actor.business_id)
     .select("version")
