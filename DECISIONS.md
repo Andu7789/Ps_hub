@@ -175,3 +175,16 @@ Docker Hub rate-limited this environment, so the full `supabase start` stack cou
 **Verified:** contrast checked in a real browser (page text 16:1, card text 14.7:1, primary button 8.2:1, all above WCAG AA's 4.5:1), and `.light-surface`'s output checked byte-for-byte against the original light theme's rendered colours.
 
 **Reversibility:** High — swap the two palettes in `globals.css`, or add a `prefers-color-scheme`/toggle later without touching any component, since every page already reads these as CSS custom properties rather than hardcoded colours.
+
+---
+
+## 17. The marketing site matches the app's dark theme
+
+**Decision:** `public/site/site.css` now overrides Creativo's own root variables (`--background-color`, `--default-color`, `--heading-color`, `--surface-color`) to the same indigo-navy palette as the app (#16), and `--accent-color`/`--contrast-color` the same way: the accent lightened via `color-mix()`, paired with dark text via `--contrast-color` (Creativo's own "text on an accent/heading fill" variable) rather than the stock white, for the same reason — a colour legible on white is often too dark to read on a near-black page. `.light-background`/`.dark-background`, the two presets the generated pages already alternate between per section, both become elevated-dark shades instead of white, so sections keep their visual rhythm without any page turning white.
+
+**Two real bugs found while checking this in a browser, not just by eye:** Bootstrap 5.3 paints its own `<table>` cells and checkbox backgrounds from `--bs-table-bg`/`--bs-form-check-bg` (both defaulting to Bootstrap's own white `--bs-body-bg`), not from a `background` rule on the element itself — the "Who sees what" role table and the pricing calculator's checkboxes stayed white until `.roles-table`/`.calc-row .form-check-input` overrode those specific Bootstrap variables directly.
+
+**Verified:** contrast checked in a real browser (hero heading 15.4:1, buttons 8.2:1, all above WCAG AA), both viewport widths, no failed asset requests, and the pricing calculator and FAQ accordion still work.
+
+**Reversibility:** High — `public/site/site.css` is one file, independent of the generator (`scripts/build-site.mjs`) and of the app's own theme in `src/app/globals.css`.
+

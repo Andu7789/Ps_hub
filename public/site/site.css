@@ -1,9 +1,30 @@
 /* PS Business Hub marketing site: additions on top of Creativo's main.css
-   (kept unmodified). Accent is the app's own teal (#0f766e, the default
-   --brand in src/app/globals.css), ~5.4:1 against the white button text. */
+   (kept unmodified). Dark theme matching the app itself (src/app/globals.css):
+   same indigo-navy background, and the same lightened, dark-text pairing
+   for the brand colour, since a colour picked to read on white is often
+   too dark to read as text or a button fill on a near-black page.
+   --contrast-color is Creativo's own "text on an accent/heading fill"
+   variable, so darkening it here fixes every accent-filled element in
+   main.css at once, not just the ones this file adds. */
 :root {
-  --accent-color: #0f766e;
-  --nav-dropdown-hover-color: #0f766e;
+  --background-color: #0a0e1a;
+  --default-color: #c7cce0;
+  --heading-color: #e8eaf5;
+  --accent-color: color-mix(in srgb, #0f766e, white 45%);
+  --surface-color: #12182b;
+  --contrast-color: #0a0e1a;
+  --nav-dropdown-hover-color: color-mix(in srgb, #0f766e, white 45%);
+}
+
+/* Both presets become elevated-dark rather than light, so sections still
+   alternate for rhythm without breaking back to a white page. */
+.light-background {
+  --background-color: #0d1326;
+  --surface-color: #171f38;
+}
+.dark-background {
+  --background-color: #05070f;
+  --surface-color: #0e1324;
 }
 
 /* Header */
@@ -11,7 +32,7 @@
 .header .logo .sitename { font-size: 24px; margin: 0; }
 .logo-mark {
   display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 9px;
-  background: var(--accent-color); color: #fff; font-size: 16px;
+  background: var(--accent-color); color: var(--contrast-color); font-size: 16px;
 }
 .header-cta-row { display: flex; align-items: center; gap: 1rem; }
 .header-cta-row .signin-link {
@@ -20,11 +41,11 @@
 }
 .header-cta-row .signin-link:hover { color: var(--accent-color); }
 .header-cta-row .btn-start {
-  display: inline-block; background: var(--accent-color); color: #fff;
+  display: inline-block; background: var(--accent-color); color: var(--contrast-color);
   font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: 10px;
   text-decoration: none; transition: all 0.3s ease; white-space: nowrap;
 }
-.header-cta-row .btn-start:hover { background: color-mix(in srgb, var(--accent-color), black 12%); color: #fff; transform: translateY(-2px); }
+.header-cta-row .btn-start:hover { background: color-mix(in srgb, var(--accent-color), black 12%); color: var(--contrast-color); transform: translateY(-2px); }
 @media (max-width: 1200px) { .header-cta-row { order: 2; } }
 @media (max-width: 420px) { .header .logo .sitename { font-size: 19px; } .header-cta-row .btn-start { padding: 8px 14px; } }
 
@@ -53,7 +74,7 @@ a:focus-visible, [role="button"]:focus-visible, input:focus-visible {
 }
 .hero-panel li i { color: var(--accent-color); margin-right: 6px; }
 .hero-panel .due { flex: none; font-size: 0.8rem; color: color-mix(in srgb, var(--default-color) 70%, transparent); }
-.hero-panel .due.overdue { color: #b3261e; font-weight: 600; }
+.hero-panel .due.overdue { color: #ff8080; font-weight: 600; }
 
 /* Promises */
 .promise { text-align: center; padding: 10px 12px; }
@@ -72,7 +93,17 @@ a:focus-visible, [role="button"]:focus-visible, input:focus-visible {
 
 /* Roles table */
 .roles-title { font-family: var(--heading-font); font-size: 1.4rem; text-align: center; margin-bottom: 18px; }
-.roles-table { background: var(--surface-color); border-radius: 14px; overflow: hidden; }
+/* Bootstrap 5.3 tables paint each cell from --bs-table-bg (defaulting to
+   Bootstrap's own white --bs-body-bg), not from a background on <table>
+   itself — override that directly rather than fighting it with a rule
+   Bootstrap's own, later, more specific cell rule would win over. */
+.roles-table {
+  --bs-table-bg: var(--surface-color);
+  --bs-table-color: var(--default-color);
+  --bs-table-border-color: color-mix(in srgb, var(--default-color), transparent 88%);
+  border-radius: 14px;
+  overflow: hidden;
+}
 .roles-table th, .roles-table td { padding: 14px 16px; }
 .roles-table thead th { font-family: var(--nav-font); font-size: 0.9rem; text-align: center; }
 .roles-table tbody td { text-align: center; color: color-mix(in srgb, var(--default-color) 55%, transparent); }
@@ -86,7 +117,16 @@ a:focus-visible, [role="button"]:focus-visible, input:focus-visible {
   display: flex; align-items: center; gap: 12px; padding: 10px 4px; cursor: pointer;
   border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
 }
-.calc-row .form-check-input { margin: 0; flex: none; }
+/* Bootstrap checkboxes paint from --bs-form-check-bg (Bootstrap's own
+   white --bs-body-bg by default) and --bs-border-color, same self-painting
+   pattern as .table above — override both rather than the plain
+   background/border-color properties Bootstrap's own rule already sets. */
+.calc-row .form-check-input {
+  --bs-form-check-bg: var(--surface-color);
+  --bs-border-color: color-mix(in srgb, var(--default-color), transparent 60%);
+  margin: 0;
+  flex: none;
+}
 .calc-row .form-check-input:checked { background-color: var(--accent-color); border-color: var(--accent-color); }
 .calc-name { flex: 1; }
 .calc-name i { color: var(--accent-color); margin-right: 6px; }
