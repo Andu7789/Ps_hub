@@ -15,7 +15,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
 const NAME = "PS Business Hub";
 const SIGN_IN = "/login";
 
-const BASE_PRICE = 10;
+const BASE_PRICE = 20;
 
 const MODULES = [
   {
@@ -185,7 +185,7 @@ const MODULES = [
     key: "website",
     name: "Website & Bookings",
     icon: "bi-globe",
-    price: 15,
+    price: 50,
     tagline: "A simple public page that brings in bookings and reviews.",
     summary:
       "A public page with your services, reviews and jobs. Customers send booking requests from it, you collect reviews by email, and you can print a flyer or use your own domain.",
