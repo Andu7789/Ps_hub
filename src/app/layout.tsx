@@ -22,10 +22,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang="en-GB" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      {/* Every bg-brand/text-brand utility resolves to this property (see
-          globals.css), so the whole portal takes on the business's colour. */}
+      {/* Every bg-brand/text-brand utility resolves to --brand (see
+          globals.css), which derives from this raw value, so the whole
+          portal takes on the business's colour, lightened for the app's
+          dark shell. */}
       <head>
-        <style>{`:root { --brand: ${brandColor}; }`}</style>
+        <style>{`:root { --brand-raw: ${brandColor}; }`}</style>
       </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <Header

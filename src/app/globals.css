@@ -1,18 +1,55 @@
 @import "tailwindcss";
 
+/* Dark theme (indigo-harbor inspired: https://21st.dev/@serafimcloud/themes/indigo-harbor)
+   for the app itself — the Hub's own screens (sign in, overview, every
+   register, staff, settings, platform admin). A business's OWN
+   customer-facing pages (its public site, review links, the printable
+   flyer) stay light: see .light-surface below, used by PublicShell and
+   the flyer, which reset these back to the original light values so a
+   café's public booking page never looks like a dark admin dashboard. */
 :root {
+  --background: #0a0e1a;
+  --foreground: #e8eaf5;
+  --card: #12182b;
+  --border: #232a45;
+  --muted: #1a2140;
+  --muted-foreground: #98a3c4;
+  --danger: #ff8080;
+  --success: #52dd97;
+
+  /* Every business picks its own colour (hub_businesses.brand_color),
+     injected here as --brand-raw by the page that knows it (RootLayout
+     for the app; PublicShell/the flyer set --brand directly themselves,
+     see .light-surface). Chosen against a white page, it's often too
+     dark to read as text on this near-black background, so the app
+     lightens it with color-mix rather than using it verbatim, and pairs
+     it with dark text instead of assuming white always works. */
+  --brand-raw: #0f766e;
+  --brand: color-mix(in srgb, var(--brand-raw), white 45%);
+  --brand-foreground: #0a0e1a;
+  --accent: color-mix(in srgb, var(--brand-raw), white 65%);
+  --accent-foreground: #0a0e1a;
+}
+
+/* A business's own light theme, unaffected by the app's dark shell:
+   PublicShell (its public site, job adverts, review links) and the
+   printable flyer both use this. Same values the whole app used before
+   the dark theme, so nothing a business's customers see has changed. */
+.light-surface {
   --background: #f6f7f7;
   --foreground: #111827;
-  --brand: #0f766e;
+  --card: #ffffff;
+  --border: #dfe5e3;
+  --muted: #eef2f1;
+  --muted-foreground: #5b6b68;
+  --danger: #b3261e;
+  --success: #15803d;
+  --brand: var(--brand-raw);
   --brand-foreground: #ffffff;
   --accent: #0369a1;
   --accent-foreground: #ffffff;
-  --muted: #eef2f1;
-  --muted-foreground: #5b6b68;
-  --card: #ffffff;
-  --border: #dfe5e3;
-  --danger: #b3261e;
-  --success: #15803d;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 @theme inline {

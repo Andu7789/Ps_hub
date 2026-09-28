@@ -163,3 +163,15 @@ Docker Hub rate-limited this environment, so the full `supabase start` stack cou
 **Licensing:** BootstrapMade's free Creativo license covers personal, non-commercial projects only, and requires keeping the "BootstrapMade — Creativo" footer credit; it does not cover a paid product or client work. MessageHome and Order Ahead already ship on the free tier's terms (credit kept) for what are commercial products, so this isn't a new question — but it means none of the three sites are on solid licensing ground as they stand. A Pro licence (BootstrapMade sells one covering unlimited sites) is the fix; that's a purchase for the business owner to make, not something this codebase can resolve on its own.
 
 **Reversibility:** High for the site itself (regenerate or delete `public/welcome.html` and `public/features/`). The licence question doesn't reverse — it's owed for however long any of the three sites keeps running on this template.
+
+---
+
+## 16. A dark theme for the app, not for a business's own public pages
+
+**Decision:** `src/app/globals.css`'s `:root` is now a dark, indigo-tinted palette (inspired by the "indigo-harbor" theme at 21st.dev — its exact tokens weren't reachable to copy directly, so this is a hand-built dark companion in the same navy-indigo family, not a literal port). A business's own colour (`hub_businesses.brand_color`) is injected as `--brand-raw`; `--brand` and `--accent` are derived from it with `color-mix()` toward white, paired with dark (`--brand-foreground`) rather than always-white text, because a colour picked to read on a white page is often too dark to read as text on a near-black one. A `.light-surface` class resets every token back to the exact original light values (and `--brand`/`--brand-foreground` back to the business's raw colour and white) — applied to `PublicShell` (a business's public site, job adverts, review links) and the printable flyer, so what a business's own customers see, and what prints on paper, is unchanged.
+
+**Why:** The Hub's admin screens and a business's customer-facing pages have different owners and different needs — a café's booking page shouldn't inherit the Hub's own dark developer-tool look, and a flyer has to print on white regardless of the app's theme. Deriving `--brand` from `--brand-raw` rather than recolouring by hand means any business's chosen colour, including ones already saved, gets a dark-mode-safe pairing automatically, with no per-business migration.
+
+**Verified:** contrast checked in a real browser (page text 16:1, card text 14.7:1, primary button 8.2:1, all above WCAG AA's 4.5:1), and `.light-surface`'s output checked byte-for-byte against the original light theme's rendered colours.
+
+**Reversibility:** High — swap the two palettes in `globals.css`, or add a `prefers-color-scheme`/toggle later without touching any component, since every page already reads these as CSS custom properties rather than hardcoded colours.

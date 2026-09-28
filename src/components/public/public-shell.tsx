@@ -2,7 +2,10 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 // Frame for public pages (a business's site, job adverts, review links):
-// the business's own name, logo and colour, with no Hub navigation.
+// the business's own name, logo and colour, with no Hub navigation. Always
+// light (.light-surface, globals.css), whatever theme the Hub's own
+// screens are using — a business's customers see its own site, not the
+// Hub's admin dashboard.
 export function PublicShell({
   business,
   children,
@@ -11,7 +14,7 @@ export function PublicShell({
   children: ReactNode;
 }) {
   return (
-    <div style={{ ["--brand" as string]: business.brand_color }} className="min-h-full">
+    <div style={{ ["--brand-raw" as string]: business.brand_color }} className="light-surface min-h-full">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-4">
           {business.logo_url && (

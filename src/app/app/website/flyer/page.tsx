@@ -23,10 +23,12 @@ export default async function FlyerPage() {
   const url = business.custom_domain ? `https://${business.custom_domain}` : `${siteOrigin()}/s/${business.slug}`;
 
   return (
-    <div className="space-y-4">
+    // Always light (.light-surface, globals.css), whatever theme the rest
+    // of the app is using: a flyer meant to be printed on white paper.
+    <div className="light-surface space-y-4">
       <PrintButton />
       <article
-        style={{ ["--brand" as string]: business.brand_color }}
+        style={{ ["--brand-raw" as string]: business.brand_color }}
         className="mx-auto flex aspect-[210/297] max-w-2xl flex-col overflow-hidden rounded-xl border border-border bg-white text-gray-900 print:max-w-none print:rounded-none print:border-0"
       >
         <header className="bg-brand px-10 py-12 text-brand-foreground">
