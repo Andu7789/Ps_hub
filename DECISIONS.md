@@ -140,3 +140,14 @@ A business's own domain is served by `src/proxy.ts`: a request on a domain other
 ## 13. Testing without the hosted services
 
 Docker Hub rate-limited this environment, so the full `supabase start` stack couldn't be pulled. The browser tests ran instead against local Postgres 16, Supabase's real auth server (GoTrue) and PostgREST release binaries, a small Node proxy standing in for the API gateway, and an in-memory stand-in for Storage (upload, signed link, download, delete). That exercises the real sign-in, RLS and database functions. File storage on a real Supabase project is the one piece only tested against the stand-in.
+
+---
+
+## 14. A platform admin area, gated by email
+
+**Decision:** `/admin` shows every business, its owner and team, the modules it has on, how much it uses the Hub, and what it would pay each month. Access is an allowlist of emails in the `SUPERADMIN_EMAILS` environment variable, checked on every admin page and action; anyone else gets a 404. Admin pages read with the service-role client. Module prices (`hub_module_prices`, plus a `base` fee every business pays) and per-business flags (`hub_admin_business_flags`: exclude from revenue, a private note) are in tables that no API role can touch: RLS on, no policies, grants revoked.
+
+**Why:** The operator needs to see across businesses, which RLS deliberately never allows. An environment variable can't be granted from inside the app, so no business owner can promote themselves. Revenue is an estimate from current prices until Stripe billing exists (ROADMAP.md); at that point the figures should come from Stripe instead.
+
+**Reversibility:** High.
+

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/ui/header";
 import { getCurrentMembership, getMemberships, getUser } from "@/lib/auth";
+import { isPlatformAdminEmail } from "@/lib/platform-admin";
 import { PRODUCT_NAME } from "@/lib/site";
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <Header
           signedIn={Boolean(user)}
+          platformAdmin={isPlatformAdminEmail(user?.email)}
           current={current ? { businessId: current.business_id, name: current.business.name, logoUrl: current.business.logo_url } : null}
           businesses={memberships.map((m) => ({ id: m.business_id, name: m.business.name }))}
         />

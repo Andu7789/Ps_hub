@@ -20,6 +20,7 @@ Most module screens are "registers" described in `src/lib/registers/defs.ts` and
 | `/start` | Signed in, no business yet | Create a business |
 | `/s/<slug>` | Public | A business's website, booking form, jobs and privacy notice |
 | `/review/<token>` | Public | Leave a review from an emailed link |
+| `/admin` | Platform admin (`SUPERADMIN_EMAILS`) | Every business, its owner and modules, estimated revenue, module prices |
 
 ## Local development
 
@@ -49,6 +50,10 @@ npx supabase status          # prints the URL and keys for .env.local
 ## Deploying on Vercel
 
 Set the variables in `.env.example`, including `CRON_SECRET`: `vercel.json` schedules the daily reminder email at 07:00 UTC and Vercel sends that secret with it. For a business using its own domain, add the domain to the Vercel project and point its DNS at Vercel; the Hub then shows that business's public page on it.
+
+## Demo data
+
+`scripts/demo-data.sql` fills one business with realistic records in every module (a small digital agency) for demos. Put the business's id at the top and run it in the Supabase SQL editor. It refuses to run twice on the same business.
 
 ## Scripts
 

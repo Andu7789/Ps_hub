@@ -7,10 +7,12 @@ import { PRODUCT_NAME } from "@/lib/site";
 
 export function Header({
   signedIn,
+  platformAdmin = false,
   current,
   businesses,
 }: {
   signedIn: boolean;
+  platformAdmin?: boolean;
   current: { businessId: string; name: string; logoUrl: string | null } | null;
   businesses: { id: string; name: string }[];
 }) {
@@ -31,6 +33,11 @@ export function Header({
         </Link>
         {signedIn && (
           <div className="flex items-center gap-4 text-sm">
+            {platformAdmin && (
+              <Link href="/admin" className="font-medium text-foreground hover:text-brand">
+                Admin
+              </Link>
+            )}
             {businesses.length > 1 && current && (
               <form action={switchBusinessAction} className="flex items-center gap-2">
                 <label htmlFor="business-switcher" className="sr-only">

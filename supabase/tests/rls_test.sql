@@ -178,6 +178,19 @@ do $$ begin
 exception when insufficient_privilege then null;
 end $$;
 
+-- Platform admin tables are server-only: not even an owner can read or
+-- change prices or the revenue flags through the API.
+reset role;
+set role authenticated;
+select test.act_as(:'owner', 'owner@a.test');
+select test.expect_error('select count(*) from hub_module_prices', 'owners cannot read module prices');
+select test.expect_error('update hub_module_prices set monthly_price = 0', 'owners cannot change module prices');
+select test.expect_error('select count(*) from hub_admin_business_flags', 'owners cannot read admin flags');
+select test.expect_error(format('insert into hub_admin_business_flags (business_id, exclude_from_revenue) values (%L, true)', :'biz_a'), 'owners cannot exclude their business from revenue');
+reset role;
+set role anon;
+select test.expect_error('select count(*) from hub_module_prices', 'anon cannot read module prices');
+
 -- Deleting a business takes everything with it (the last-owner guard
 -- must not block this).
 reset role;
